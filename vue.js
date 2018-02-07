@@ -8,7 +8,6 @@ class Dep {
   // 在subs中添加一个Watcher对象
   addSub (sub) {
     this.subs.push(sub)
-    console.log('Dep..this.subs: ',this.subs)
     console.log('this.subs.length',this.subs.length)
     // 测试相等不
     if(this.subs.length>1) {
@@ -18,7 +17,8 @@ class Dep {
 
   //
   notify () {
-    console.dir('kkk ',this.subs)
+    // subs为什么会变少
+    console.log('subs为什么会变少', this.subs)
     this.subs.forEach((sub) => {
       // 这里sub就是一个个wather实例
       sub.update()
@@ -59,9 +59,7 @@ function defineReactive(obj, key, val) {
     enumerable: true,   // 属性可枚举
     configurable: true, // 属性可以修改或删除
     get: function reactiveGetter() {
-      /* 将Dep.target（即当前的Watcher对象)存入dep的subs中） */
-      console.log('defineProperty >>>')
-      console.dir(Dep.target)
+      /* 将Dep.target（即当前的Watcher对象)存入dep的subs中 */
       dep.addSub(Dep.target)
       return val // 依赖收集
     },
@@ -106,6 +104,12 @@ let globalObj = {
   name: 'szy'
 }
 
+// let v = new Vue({
+//   data: {
+//     name: '123'
+//   }
+// })
+
 let vv1 = new Vue({
   data: globalObj
 })
@@ -114,10 +118,21 @@ let vv2 = new Vue({
   data: globalObj
 })
 
-// vv1._data.test = 'I am a coder.' // 视图更新了~~ 
-
-// vv._data.test = 'I am a coder11111.' // 视图更新了~~ 
-
 // 按理说应该要更新两次才对，但才更新一次？
-globalObj.name = 'szy999'
+// globalObj.name = 'szy999'
 
+// globalObj = {
+//   name: '我是哈哈'
+// }
+
+// 实际上就是给这个对象的这个属性get和set分别做了操作
+// 对这个对象的这个属性使用 获取操作时 会收集依赖，也就是将Watcher实例放到dep.subs订阅者们数据中
+// 而对这个对象的这个属性使用 设置操作时 会进行通知 notify 操作
+globalObj.name = 'szy999'
+// globalObj = {
+//   name: '12312321321321'
+// }
+
+// v._data.name = '123123'
+// v._data.name = '123123'
+// v._data.name = '123123'
