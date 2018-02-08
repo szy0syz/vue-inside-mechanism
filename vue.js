@@ -1,6 +1,7 @@
 // 订阅者
 class Dep {
   constructor () {
+    console.log('新建一个Dep订阅者')
     // 用来存放Watcher对象的数组
     this.subs = []
   }
